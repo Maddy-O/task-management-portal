@@ -1,2 +1,3 @@
 # task-management-portal
-This is a web app where you can manage you day to day tasks and stay productive and keep record of you work.
+
+Get-Set-Go is a sample web app where you can manage your day to day tasks which will help in increasing productivity and focus and also keep record of your productive work.
