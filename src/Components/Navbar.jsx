@@ -1,4 +1,5 @@
 import React from "react";
+import tasks from "../Assets/tasks.png";
 
 const Navbar = () => {
   return (
@@ -8,29 +9,25 @@ const Navbar = () => {
         justifyContent: "space-between",
         backgroundColor: "#0188a8",
         color: "#c0c0c1",
-        padding: "15px 25px",
+        padding: "10px 25px",
+        height: "40px",
+        textAlign: "center",
       }}
     >
-      <p
-        style={{
-          margin: "0px",
-          fontSize: "35px",
-          fontWeight: "bolder",
-          fontFamily: "sans-serif",
-        }}
-      >
-        Get - Set - Go
-      </p>
-      <p
-        style={{
-          margin: "0px",
-          fontSize: "35px",
-          fontWeight: "bolder",
-          fontFamily: "sans-serif",
-        }}
-      >
-        User
-      </p>
+      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <img src={tasks} alt="#" height="100%" />
+        <p
+          style={{
+            margin: "0px",
+            fontSize: "25px",
+            fontWeight: "bolder",
+            fontFamily: "sans-serif",
+            textShadow: "2px 2px 2px 2px gray",
+          }}
+        >
+          Get - Set - Go
+        </p>
+      </div>
     </div>
   );
 };
