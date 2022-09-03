@@ -19,6 +19,8 @@ for creating unique id to identifying tasks
 ## Folder Structure
 
 - Components
--- Navbar
+- - Navbar
 - Pages
+- - Homepage
 - Assets
+- - Logo
