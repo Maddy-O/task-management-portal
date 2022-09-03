@@ -44,3 +44,5 @@ It is a file that tells Netlify where it should redirect the clients based on th
 ### `npm run build`
 
 npm run build creates a build directory with a production build of your app. When users visit your site, each of your files will require an additional HTTP request, making your site slower to load. To solve this we can create a “build” of our app, which merges all your CSS files into one file, and does the same with your JavaScript.
+
+- [Deployment Link](https://get-set-go-maddy-new-mini-app.netlify.app/)
