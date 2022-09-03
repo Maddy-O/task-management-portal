@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import uuid from "react-uuid";
 
 const Home = () => {
@@ -6,8 +6,8 @@ const Home = () => {
   const [title, setTile] = useState("");
   const [desc, setDesc] = useState("");
   const [dragging, setDragging] = useState(false);
-  const dragItem = useRef();
   const placeToDragItem = useRef();
+  const dragItem = useRef();
   const [todoData, setTodoData] = useState(
     JSON.parse(localStorage.getItem("todo")) || []
   );
@@ -67,13 +67,11 @@ const Home = () => {
   // ---------------------HANDLE DRAG START------------------------------------------
 
   const handleDragStart = (e, prop) => {
-    // console.log("Drag Start", prop.data);
     dragItem.current = prop.data;
     setDragging(true);
   };
 
   const handleDragEnter = (e, prop) => {
-    // console.log("Drag Enter", prop.place, dragItem.current);
     placeToDragItem.current = prop.place;
   };
 
@@ -90,42 +88,45 @@ const Home = () => {
       dragFrom = doneData;
       setDragFrom = setDoneData;
     }
-    let dragTo = [];
     if (placeToDragItem.current === "doing") {
-      dragTo = doingData;
-      if (dragTo.filter((item) => item.id !== dragItem.current.id)) {
+      let a = doingData.filter((item) => item.id === dragItem.current.id);
+      if (a?.length !== 1) {
         let b = dragFrom.filter((item) => item.id !== dragItem.current.id);
         localStorage.removeItem(prop.place);
         setDragFrom(localStorage.setItem(prop.place, JSON.stringify(b)) || []);
         localStorage.setItem(prop.place, JSON.stringify(b));
         doingData.push(dragItem.current);
-        localStorage.setItem("doing", JSON.stringify(dragTo));
+        localStorage.setItem("doing", JSON.stringify(doingData));
       }
     } else if (placeToDragItem.current === "done") {
-      if (dragTo.filter((item) => item.id !== dragItem.current.id)) {
+      let a = doneData.filter((item) => item.id === dragItem.current.id);
+      if (a?.length !== 1) {
         let b = dragFrom.filter((item) => item.id !== dragItem.current.id);
         localStorage.removeItem(prop.place);
         setDragFrom(localStorage.setItem(prop.place, JSON.stringify(b)) || []);
         localStorage.setItem(prop.place, JSON.stringify(b));
         doneData.push(dragItem.current);
-        localStorage.setItem("done", JSON.stringify(dragTo));
+        localStorage.setItem("done", JSON.stringify(doneData));
       }
     } else if (placeToDragItem.current === "todo") {
-      console.log("placeToDragItem", placeToDragItem);
-      let a = dragTo.filter((item) => item.id !== dragItem.current.id);
-      console.log(a);
-      console.log(dragTo);
-      if (dragTo.filter((item) => item.id !== dragItem.current.id)) {
+      let a = todoData.filter((item) => item.id === dragItem.current.id);
+      if (a?.length !== 1) {
         let b = dragFrom.filter((item) => item.id !== dragItem.current.id);
         localStorage.removeItem(prop.place);
         setDragFrom(localStorage.setItem(prop.place, JSON.stringify(b)) || []);
         localStorage.setItem(prop.place, JSON.stringify(b));
         todoData.push(dragItem.current);
-        localStorage.setItem("todo", JSON.stringify(dragTo));
+        localStorage.setItem("todo", JSON.stringify(todoData));
       }
     }
     setDragging(false);
   };
+
+  useEffect(() => {
+    setTodoData(JSON.parse(localStorage.getItem("todo")) || []);
+    setDoingData(JSON.parse(localStorage.getItem("doing")) || []);
+    setDoneData(JSON.parse(localStorage.getItem("done")) || []);
+  }, [setDoingData, setDoneData, setTodoData, setDragging]);
 
   return (
     <>
