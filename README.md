@@ -27,3 +27,20 @@ UUID(universally unique identifier) is a library used for creating unique id to 
 - - Homepage
 - Assets
 - - Logo
+
+## Storage
+
+## `Local Storage`
+
+It is a property that allows JavaScript sites and apps to save key-value pairs in a web browser with no expiration date.
+The purpose using localstorage is just learning, I am aware of mongoDB and can impliment other database.
+
+## Deployment
+
+### `_redirects`
+
+It is a file that tells Netlify where it should redirect the clients based on the address or route that they are attempting to request.
+
+### `npm run build`
+
+npm run build creates a build directory with a production build of your app. When users visit your site, each of your files will require an additional HTTP request, making your site slower to load. To solve this we can create a “build” of our app, which merges all your CSS files into one file, and does the same with your JavaScript.
