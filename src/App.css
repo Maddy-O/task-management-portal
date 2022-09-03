@@ -102,3 +102,12 @@
   box-shadow: 5px 5px 5px 5px gray;
   width: 90%
 }
+
+.search-result {
+  margin-top: 15px;
+  padding: 10px 15px;
+  border-radius: 15px;
+  border: none;
+  box-shadow: 5px 5px 5px 5px gray;
+  width: 90%
+}

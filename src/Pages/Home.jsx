@@ -8,8 +8,12 @@ const Home = () => {
   const [desc, setDesc] = useState("");
   const [attach, setAttach] = useState("");
   const [asign, setAsign] = useState("");
-  const [search, setSearch] = useState("");
-  const [searchResult, setSearchResult] = useState("");
+  const [todoSearch, setTodoSearch] = useState("");
+  const [doingSearch, setDoingSearch] = useState("");
+  const [doneSearch, setDoneSearch] = useState("");
+  const [todoSearchResult, setTodoSearchResult] = useState([]);
+  const [doingSearchResult, setDoingSearchResult] = useState([]);
+  const [doneSearchResult, setDoneSearchResult] = useState([]);
   const [addComm, setAddComment] = useState("");
   const [dragging, setDragging] = useState(false);
   const placeToDragItem = useRef();
@@ -110,7 +114,7 @@ const Home = () => {
     setDragging(false);
   };
 
-  // //-----------------Debounce--------------
+  // //-----------------Debounce--------------------------------
   function debounce(func, timeout = 500) {
     let timer;
     return (...args) => {
@@ -121,25 +125,44 @@ const Home = () => {
     };
   }
   const saveInput = (e, p) => {
-    setSearch(e);
-    let data = [];
-    if (p.place === "todo") data = todoData;
-    else if (p.place === "doing") data = doingData;
-    else if (p.place === "done") data = doneData;
-    let a = data.filter((el) => {
-      if (e === "") return el;
-      else return el.title.toLowerCase().includes(e);
-    });
-    console.log("Saving data", a);
-    setSearchResult(a);
+    if (p.place === "todo") {
+      setTodoSearch(e);
+      let a = todoData.filter((el) => {
+        if (e === "") return null;
+        else return el.title.toLowerCase().includes(e);
+      });
+      setTodoSearchResult(a);
+    } else if (p.place === "doing") {
+      setDoingSearch(e);
+      let a = doingData.filter((el) => {
+        if (e === "") return null;
+        else return el.title.toLowerCase().includes(e);
+      });
+      setDoingSearchResult(a);
+    } else if (p.place === "done") {
+      setDoneSearch(e);
+      let a = doneData.filter((el) => {
+        if (e === "") return null;
+        else return el.title.toLowerCase().includes(e);
+      });
+      setDoneSearchResult(a);
+    }
   };
   const processChange = debounce((e, p) => saveInput(e, p));
 
+  // //-----------------UseEffect------------------------------------
   useEffect(() => {
     setTodoData(JSON.parse(localStorage.getItem("todo")) || []);
     setDoingData(JSON.parse(localStorage.getItem("doing")) || []);
     setDoneData(JSON.parse(localStorage.getItem("done")) || []);
-  }, [doingData?.length, todoData?.length, doneData?.length, search]);
+  }, [
+    doingData?.length,
+    todoData?.length,
+    doneData?.length,
+    todoSearch?.length,
+    doingSearch?.length,
+    doneSearch?.length,
+  ]);
 
   return (
     <>
@@ -171,9 +194,16 @@ const Home = () => {
             <input
               placeholder="Search new tasks"
               className="search-bar"
-              value={search}
+              value={todoSearch}
               onChange={(e) => processChange(e.target.value, { place: "todo" })}
             />
+            <div>
+              {todoSearchResult?.map((e) => (
+                <div className="search-result" key={e.id}>
+                  {e.title}
+                </div>
+              ))}
+            </div>
           </div>
           <div
             className="addTask"
@@ -263,11 +293,18 @@ const Home = () => {
             <input
               placeholder="search on-going tasks"
               className="search-bar"
-              value={search}
+              value={doingSearch}
               onChange={(e) =>
                 processChange(e.target.value, { place: "doing" })
               }
             />
+            <div>
+              {doingSearchResult?.map((e) => (
+                <div className="search-result" key={e.id}>
+                  {e.title}
+                </div>
+              ))}
+            </div>
           </div>
           <div>
             {doingData.map((e, index) => (
@@ -315,9 +352,16 @@ const Home = () => {
             <input
               placeholder="search completed tasks"
               className="search-bar"
-              value={search}
+              value={doneSearch}
               onChange={(e) => processChange(e.target.value, { place: "done" })}
             />
+            <div>
+              {doneSearchResult?.map((e) => (
+                <div className="search-result" key={e.id}>
+                  {e.title}
+                </div>
+              ))}
+            </div>
           </div>
           <div
             className="addTask"
