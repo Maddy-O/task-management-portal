@@ -22,7 +22,7 @@ const Navbar = () => {
             fontSize: "25px",
             fontWeight: "bolder",
             fontFamily: "sans-serif",
-            textShadow: "2px 2px 2px 2px gray",
+            textShadow: "5px 5px 5px black",
           }}
         >
           Get - Set - Go

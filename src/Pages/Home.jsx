@@ -9,6 +9,7 @@ const Home = () => {
   const [attach, setAttach] = useState("");
   const [asign, setAsign] = useState("");
   const [search, setSearch] = useState("");
+  const [searchResult, setSearchResult] = useState("");
   const [addComm, setAddComment] = useState("");
   const [dragging, setDragging] = useState(false);
   const placeToDragItem = useRef();
@@ -109,11 +110,36 @@ const Home = () => {
     setDragging(false);
   };
 
+  // //-----------------Debounce--------------
+  function debounce(func, timeout = 500) {
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        func.apply(this, args);
+      }, timeout);
+    };
+  }
+  const saveInput = (e, p) => {
+    setSearch(e);
+    let data = [];
+    if (p.place === "todo") data = todoData;
+    else if (p.place === "doing") data = doingData;
+    else if (p.place === "done") data = doneData;
+    let a = data.filter((el) => {
+      if (e === "") return el;
+      else return el.title.toLowerCase().includes(e);
+    });
+    console.log("Saving data", a);
+    setSearchResult(a);
+  };
+  const processChange = debounce((e, p) => saveInput(e, p));
+
   useEffect(() => {
     setTodoData(JSON.parse(localStorage.getItem("todo")) || []);
     setDoingData(JSON.parse(localStorage.getItem("doing")) || []);
     setDoneData(JSON.parse(localStorage.getItem("done")) || []);
-  }, [setDoingData, setDoneData, setTodoData, setDragging, setDisplyAlert]);
+  }, [doingData?.length, todoData?.length, doneData?.length, search]);
 
   return (
     <>
@@ -141,12 +167,12 @@ const Home = () => {
             <div>Not Started</div>
             <button onClick={() => setDisplayAdd(!displayAdd)}>+</button>
           </div>
-          <div style={displayAdd ? { display: "none" } : { padding: "7px" }}>
+          <div style={displayAdd ? { display: "none" } : { margin: "15px" }}>
             <input
               placeholder="Search new tasks"
-              style={{ padding: "7px", width: "95%" }}
+              className="search-bar"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => processChange(e.target.value, { place: "todo" })}
             />
           </div>
           <div
@@ -233,10 +259,14 @@ const Home = () => {
           <div className="task-bar-heading">
             <div>In Development</div>
           </div>
-          <div style={{ padding: "7px" }}>
+          <div style={{ margin: "15px" }}>
             <input
               placeholder="search on-going tasks"
-              style={{ padding: "7px", width: "95%" }}
+              className="search-bar"
+              value={search}
+              onChange={(e) =>
+                processChange(e.target.value, { place: "doing" })
+              }
             />
           </div>
           <div>
@@ -281,10 +311,12 @@ const Home = () => {
           >
             <div>Completed</div>
           </div>
-          <div style={{ padding: "7px" }}>
+          <div style={{ margin: "15px" }}>
             <input
               placeholder="search completed tasks"
-              style={{ padding: "7px", width: "95%" }}
+              className="search-bar"
+              value={search}
+              onChange={(e) => processChange(e.target.value, { place: "done" })}
             />
           </div>
           <div

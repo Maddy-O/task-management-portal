@@ -4,7 +4,7 @@
 
 .task-bar {
   width: 33%;
-  box-shadow: 2px 2px 2px;
+  box-shadow: 5px 5px 5px 5px gray;
 }
 
 .task-bar-heading {
@@ -14,12 +14,14 @@
   padding: 5px 15px;
   background-color: #ffc300;
   color: white;
-  height: 35px;
+  height: 50px;
+  box-shadow: 2px 2px 2px 2px gray;
+  margin-bottom: 10px;
 }
 
 
 .task-bar-heading>div {
-  text-shadow: 2px 2px 2px black;
+  text-shadow: 5px 5px 5px black;
   font-size: 20px;
   font-weight: bold;
 }
@@ -32,7 +34,7 @@
   font-size: 20px;
   font-weight: bold;
   border-radius: 20px;
-  box-shadow: 2px 2px 2px black
+  box-shadow: 3px 3px 3px black;
 }
 
 .addTask>input {
@@ -50,9 +52,9 @@
 .task-card {
   text-align: left;
   padding: 15px;
-  margin: 10px;
+  margin: 15px;
   border-radius: 10px;
-  box-shadow: 1px 1px 3px 2px black
+  box-shadow: 5px 5px 5px 5px gray
 }
 
 .task-card-button {
@@ -91,4 +93,12 @@
 .tool-tip:hover .tool-tip-text {
   visibility: visible;
   opacity: 1;
+}
+
+.search-bar {
+  padding: 10px 15px;
+  border-radius: 15px;
+  border: none;
+  box-shadow: 5px 5px 5px 5px gray;
+  width: 90%
 }
