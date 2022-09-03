@@ -1,13 +1,13 @@
-import React, { useState } from "react";
-import tasks from "../Assets/tasks.png";
+import React, { useState, useRef } from "react";
 import uuid from "react-uuid";
-import DataBars from "../Components/DataBars";
-import TaskCard from "../Components/TaskCard";
 
 const Home = () => {
   const [displayAdd, setDisplayAdd] = useState(false);
   const [title, setTile] = useState("");
   const [desc, setDesc] = useState("");
+  const [dragging, setDragging] = useState(false);
+  const dragItem = useRef();
+  const placeToDragItem = useRef();
   const [todoData, setTodoData] = useState(
     JSON.parse(localStorage.getItem("todo")) || []
   );
@@ -25,7 +25,7 @@ const Home = () => {
     todoData.push(newTask);
     localStorage.setItem("todo", JSON.stringify(todoData));
     setDisplayAdd(!displayAdd);
-    console.log(todoData);
+    // console.log(todoData);
   };
 
   // ---------------------MOVING TASK TO DOING------------------------------------------
@@ -38,7 +38,6 @@ const Home = () => {
     let newTask = a[0];
     doingData.push(newTask);
     localStorage.setItem("doing", JSON.stringify(doingData));
-    console.log("b", b);
   };
 
   // ---------------------MOVING TASK TO TODO------------------------------------------
@@ -65,6 +64,69 @@ const Home = () => {
     localStorage.setItem("done", JSON.stringify(doneData));
   };
 
+  // ---------------------HANDLE DRAG START------------------------------------------
+
+  const handleDragStart = (e, prop) => {
+    // console.log("Drag Start", prop.data);
+    dragItem.current = prop.data;
+    setDragging(true);
+  };
+
+  const handleDragEnter = (e, prop) => {
+    // console.log("Drag Enter", prop.place, dragItem.current);
+    placeToDragItem.current = prop.place;
+  };
+
+  const handleDragEnd = (e, prop) => {
+    let dragFrom = [];
+    let setDragFrom;
+    if (prop.place === "todo") {
+      dragFrom = todoData;
+      setDragFrom = setTodoData;
+    } else if (prop.place === "doing") {
+      dragFrom = doingData;
+      setDragFrom = setDoingData;
+    } else if (prop.place === "done") {
+      dragFrom = doneData;
+      setDragFrom = setDoneData;
+    }
+    let dragTo = [];
+    if (placeToDragItem.current === "doing") {
+      dragTo = doingData;
+      if (dragTo.filter((item) => item.id !== dragItem.current.id)) {
+        let b = dragFrom.filter((item) => item.id !== dragItem.current.id);
+        localStorage.removeItem(prop.place);
+        setDragFrom(localStorage.setItem(prop.place, JSON.stringify(b)) || []);
+        localStorage.setItem(prop.place, JSON.stringify(b));
+        doingData.push(dragItem.current);
+        localStorage.setItem("doing", JSON.stringify(dragTo));
+      }
+    } else if (placeToDragItem.current === "done") {
+      if (dragTo.filter((item) => item.id !== dragItem.current.id)) {
+        let b = dragFrom.filter((item) => item.id !== dragItem.current.id);
+        localStorage.removeItem(prop.place);
+        setDragFrom(localStorage.setItem(prop.place, JSON.stringify(b)) || []);
+        localStorage.setItem(prop.place, JSON.stringify(b));
+        doneData.push(dragItem.current);
+        localStorage.setItem("done", JSON.stringify(dragTo));
+      }
+    } else if (placeToDragItem.current === "todo") {
+      console.log("placeToDragItem", placeToDragItem);
+      let a = dragTo.filter((item) => item.id !== dragItem.current.id);
+      console.log(a);
+      console.log(dragTo);
+      if (dragTo.filter((item) => item.id !== dragItem.current.id)) {
+        let b = dragFrom.filter((item) => item.id !== dragItem.current.id);
+        localStorage.removeItem(prop.place);
+        setDragFrom(localStorage.setItem(prop.place, JSON.stringify(b)) || []);
+        localStorage.setItem(prop.place, JSON.stringify(b));
+        todoData.push(dragItem.current);
+        localStorage.setItem("todo", JSON.stringify(dragTo));
+      }
+    }
+    setDragging(false);
+  };
+
   return (
     <>
       <div
@@ -77,44 +139,22 @@ const Home = () => {
         }}
       >
         {/* -----------------------------To-Do-------------------------------- */}
-        <div style={{ width: "33%", boxShadow: "2px 2px 2px" }}>
+        <div
+          className="task-bar"
+          onDragEnter={
+            dragging ? (ele) => handleDragEnter(ele, { place: "todo" }) : null
+          }
+          onDragEnd={(ele) => handleDragEnd(ele, { place: "todo" })}
+        >
           <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: "5px 15px",
-              backgroundColor: "#ff5000",
-              color: "white",
-              height: "35px",
-            }}
+            className="task-bar-heading"
+            style={{ backgroundColor: "#ff5000" }}
           >
-            <div
-              style={{
-                textShadow: "2px 2px 2px  black",
-                fontSize: "20px",
-                fontWeight: "bold",
-              }}
-            >
-              To Do
-            </div>
-            <button
-              style={{
-                backgroundColor: "#00afef",
-                border: "none",
-                color: "white",
-                padding: "5px 10px",
-                fontSize: "20px",
-                fontWeight: "bold",
-                borderRadius: "20px",
-                boxShadow: "2px 2px 2px black",
-              }}
-              onClick={() => setDisplayAdd(!displayAdd)}
-            >
-              +
-            </button>
+            <div>To Do</div>
+            <button onClick={() => setDisplayAdd(!displayAdd)}>+</button>
           </div>
           <div
+            className="addTask"
             style={
               displayAdd
                 ? {
@@ -130,80 +170,138 @@ const Home = () => {
               placeholder="Title"
               value={title}
               onChange={(e) => setTile(e.target.value)}
-              style={{ padding: "7px" }}
             />
             <input
               placeholder="desc"
               value={desc}
               onChange={(e) => setDesc(e.target.value)}
-              style={{ padding: "7px" }}
             />
-            <button
-              onClick={addTask}
-              style={{
-                padding: "7px",
-                backgroundColor: "#00afef",
-                border: "none",
-                color: "white",
-                cursor: "pointer",
-              }}
-            >
-              Add Task
-            </button>
+            <button onClick={addTask}>Add Task</button>
           </div>
           <div style={displayAdd ? { display: "none" } : {}}>
             {todoData.map((e, index) => (
-              <TaskCard
-                draggable
+              <div
                 key={e.id}
-                data={e}
-                func1={moveToDoing}
-                func2={""}
-                btn1={"Doing"}
-                btn2={"Done"}
-              />
+                draggable
+                onDragStart={(ele) =>
+                  handleDragStart(ele, { place: "to do", data: e })
+                }
+                className="task-card"
+              >
+                <h5 style={{ margin: "0px" }}>{e.title}</h5>
+                <p style={{ margin: "10px 0px" }}>{e.desc}</p>
+                <div
+                  style={{ display: "flex", justifyContent: "space-around" }}
+                >
+                  <button
+                    className="task-card-button"
+                    onClick={() => moveToDoing(e.id)}
+                  >
+                    Doing
+                  </button>
+                  <button
+                    className="task-card-button"
+                    onClick={() => moveToDone(e.id)}
+                  >
+                    Done
+                  </button>
+                </div>
+              </div>
             ))}
           </div>
         </div>
         {/* -----------------------------Doing-------------------------------- */}
-        <div style={{ width: "33%", boxShadow: "2px 2px 2px" }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: "5px 15px",
-              backgroundColor: "#ffc300",
-              color: "white",
-              height: "35px",
-            }}
-          >
-            <div
-              style={{
-                textShadow: "2px 2px 2px  black",
-                fontSize: "20px",
-                fontWeight: "bold",
-              }}
-            >
-              Doing
-            </div>
+        <div
+          className="task-bar"
+          onDragEnter={
+            dragging ? (ele) => handleDragEnter(ele, { place: "doing" }) : null
+          }
+          onDragEnd={(ele) => handleDragEnd(ele, { place: "doing" })}
+        >
+          <div className="task-bar-heading">
+            <div>Doing</div>
           </div>
           <div>
-            {doingData.map((e) => (
-              <TaskCard
-                draggable
+            {doingData.map((e, index) => (
+              <div
                 key={e.id}
-                data={e}
-                func1={moveToDo}
-                func2={moveToDone}
-                btn1={"To Do"}
-                btn2={"Done"}
-              />
+                draggable
+                onDragStart={(ele) =>
+                  handleDragStart(ele, { place: "doing", data: e })
+                }
+                className="task-card"
+              >
+                <h5 style={{ margin: "0px" }}>{e.title}</h5>
+                <p style={{ margin: "10px 0px" }}>{e.desc}</p>
+                <div
+                  style={{ display: "flex", justifyContent: "space-around" }}
+                >
+                  <button
+                    className="task-card-button"
+                    onClick={() => moveToDo(e.id)}
+                  >
+                    To Do
+                  </button>
+                  <button
+                    className="task-card-button"
+                    onClick={() => moveToDone(e.id)}
+                  >
+                    Done
+                  </button>
+                </div>
+              </div>
             ))}
           </div>
         </div>
         {/* -----------------------------Done-------------------------------- */}
-        <DataBars data={doneData} color={"#629871"} displayAdd={displayAdd} />
+        <div
+          className="task-bar"
+          onDragEnter={
+            dragging ? (ele) => handleDragEnter(ele, { place: "done" }) : null
+          }
+          onDragEnd={(ele) => handleDragEnd(ele, { place: "done" })}
+        >
+          <div
+            className="task-bar-heading"
+            style={{ backgroundColor: "#60956f" }}
+          >
+            <div>Done</div>
+          </div>
+          <div>
+            {doneData.map((e, index) => (
+              <div
+                key={e.id}
+                draggable
+                onDragStart={(ele) =>
+                  handleDragStart(ele, { place: "done", data: e })
+                }
+                className="task-card"
+              >
+                <h5 style={{ margin: "0px" }}>{e.title}</h5>
+                <p style={{ margin: "10px 0px" }}>{e.desc}</p>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-around",
+                  }}
+                >
+                  <button
+                    className="task-card-button"
+                    onClick={() => moveToDo(e.id)}
+                  >
+                    Doing
+                  </button>
+                  <button
+                    className="task-card-button"
+                    onClick={() => moveToDone(e.id)}
+                  >
+                    To Do
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </>
   );
