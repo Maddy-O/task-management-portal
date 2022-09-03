@@ -4,17 +4,18 @@ Get-Set-Go is a sample web app where you can manage your day to day tasks which 
 
 ## Learning
 
-Drag and Drop functionality, Dynamic use of LocalStorage
+- Drag and Drop functionality
+- Dynamic use of LocalStorage
 
 ## Tech Stack
 
 ### `npx create-react-app <app name>`
 
-for basic react app setup
+It's a package runner tool use for creating basic react front end app setup
 
 ### `react-uuid`
 
-for creating unique id to identifying tasks
+UUID(universally unique identifier) is a library used for creating unique id to identifying tasks
 
 ## Folder Structure
 
