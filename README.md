@@ -18,7 +18,7 @@ for creating unique id to identifying tasks
 
 ## Folder Structure
 
-- [src]
 - Components
+-- Navbar
 - Pages
 - Assets
