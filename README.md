@@ -1,4 +1,4 @@
-# task-management-portal
+# Task-Management-Portal
 
 Get-Set-Go is a sample web app where you can manage your day to day tasks which will help in increasing your productivity and focus and also keep record of your productive work.
 
