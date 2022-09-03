@@ -20,6 +20,8 @@ for creating unique id to identifying tasks
 
 - Components
 - - Navbar
+- - Taskbar
+- - Taskcard
 - Pages
 - - Homepage
 - Assets
