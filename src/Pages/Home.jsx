@@ -3,8 +3,13 @@ import uuid from "react-uuid";
 
 const Home = () => {
   const [displayAdd, setDisplayAdd] = useState(false);
+  const [displayAlert, setDisplyAlert] = useState(false);
   const [title, setTile] = useState("");
   const [desc, setDesc] = useState("");
+  const [attach, setAttach] = useState("");
+  const [asign, setAsign] = useState("");
+  const [search, setSearch] = useState("");
+  const [addComm, setAddComment] = useState("");
   const [dragging, setDragging] = useState(false);
   const placeToDragItem = useRef();
   const dragItem = useRef();
@@ -21,47 +26,27 @@ const Home = () => {
   // ---------------------ADD TASK------------------------------------------
   const addTask = () => {
     const id = uuid();
-    let newTask = { id, title, desc };
+    let newTask = { id, title, desc, attach, asign };
     todoData.push(newTask);
     localStorage.setItem("todo", JSON.stringify(todoData));
     setDisplayAdd(!displayAdd);
-    // console.log(todoData);
   };
 
-  // ---------------------MOVING TASK TO DOING------------------------------------------
-  const moveToDoing = (e) => {
-    let a = todoData.filter((item) => item.id === e);
-    let b = todoData.filter((item) => item.id !== e);
-    localStorage.removeItem("todo");
-    setTodoData(localStorage.setItem("todo", JSON.stringify(b)) || []);
-    localStorage.setItem("todo", JSON.stringify(b));
-    let newTask = a[0];
-    doingData.push(newTask);
-    localStorage.setItem("doing", JSON.stringify(doingData));
-  };
-
-  // ---------------------MOVING TASK TO TODO------------------------------------------
-  const moveToDo = (e) => {
-    let a = doingData.filter((item) => item.id === e);
-    let b = doingData.filter((item) => item.id !== e);
-    localStorage.removeItem("doing");
-    setDoingData(localStorage.setItem("doing", JSON.stringify(b)) || []);
-    localStorage.setItem("doing", JSON.stringify(b));
-    let newTask = a[0];
-    todoData.push(newTask);
-    localStorage.setItem("todo", JSON.stringify(todoData));
-  };
-
-  // ---------------------MOVING TASK TO DONE------------------------------------------
-  const moveToDone = (e) => {
-    let a = doingData.filter((item) => item.id === e);
-    let b = doingData.filter((item) => item.id !== e);
-    localStorage.removeItem("doing");
-    setDoingData(localStorage.setItem("doing", JSON.stringify(b)) || []);
-    localStorage.setItem("doing", JSON.stringify(b));
-    let newTask = a[0];
-    doneData.push(newTask);
+  // ---------------------ADD Comment------------------------------------------
+  const addComment = () => {
+    const { id, title, desc, attach, asign } = dragItem.current;
+    console.log(dragItem.current);
+    let addedCom = {
+      id: id,
+      title: title,
+      desc: desc,
+      attach: attach,
+      asign: asign,
+      comment: addComm,
+    };
+    doneData.push(addedCom);
     localStorage.setItem("done", JSON.stringify(doneData));
+    setDisplyAlert(false);
   };
 
   // ---------------------HANDLE DRAG START------------------------------------------
@@ -105,8 +90,10 @@ const Home = () => {
         localStorage.removeItem(prop.place);
         setDragFrom(localStorage.setItem(prop.place, JSON.stringify(b)) || []);
         localStorage.setItem(prop.place, JSON.stringify(b));
-        doneData.push(dragItem.current);
-        localStorage.setItem("done", JSON.stringify(doneData));
+        alert("add commetn");
+        setDisplyAlert(true);
+        // doneData.push(dragItem.current);
+        // localStorage.setItem("done", JSON.stringify(doneData));
       }
     } else if (placeToDragItem.current === "todo") {
       let a = todoData.filter((item) => item.id === dragItem.current.id);
@@ -126,7 +113,7 @@ const Home = () => {
     setTodoData(JSON.parse(localStorage.getItem("todo")) || []);
     setDoingData(JSON.parse(localStorage.getItem("doing")) || []);
     setDoneData(JSON.parse(localStorage.getItem("done")) || []);
-  }, [setDoingData, setDoneData, setTodoData, setDragging]);
+  }, [setDoingData, setDoneData, setTodoData, setDragging, setDisplyAlert]);
 
   return (
     <>
@@ -151,8 +138,16 @@ const Home = () => {
             className="task-bar-heading"
             style={{ backgroundColor: "#ff5000" }}
           >
-            <div>To Do</div>
+            <div>Not Started</div>
             <button onClick={() => setDisplayAdd(!displayAdd)}>+</button>
+          </div>
+          <div style={displayAdd ? { display: "none" } : { padding: "7px" }}>
+            <input
+              placeholder="Search new tasks"
+              style={{ padding: "7px", width: "95%" }}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
           </div>
           <div
             className="addTask"
@@ -169,14 +164,31 @@ const Home = () => {
           >
             <input
               placeholder="Title"
+              type="text"
               value={title}
               onChange={(e) => setTile(e.target.value)}
             />
             <input
               placeholder="desc"
+              type="text"
               value={desc}
               onChange={(e) => setDesc(e.target.value)}
             />
+            <input
+              placeholder="Attachement"
+              type="file"
+              value={attach}
+              onChange={(e) => setAttach(e.target.value)}
+            />
+            <select
+              placeholder="Asign to"
+              value={asign}
+              onChange={(e) => setAsign(e.target.value)}
+            >
+              <option value={"Madan"}>Madan</option>
+              <option value={"Maddy"}>Maddy</option>
+              <option value={"Mohan"}>Mohan</option>
+            </select>
             <button onClick={addTask}>Add Task</button>
           </div>
           <div style={displayAdd ? { display: "none" } : {}}>
@@ -189,24 +201,23 @@ const Home = () => {
                 }
                 className="task-card"
               >
-                <h5 style={{ margin: "0px" }}>{e.title}</h5>
-                <p style={{ margin: "10px 0px" }}>{e.desc}</p>
+                <h4 style={{ margin: "0px" }}>{e.title}</h4>
+                <p style={{ margin: "10px 0px" }}>
+                  {" "}
+                  <b>File : </b>
+                  {e.attach}
+                </p>
+                <p style={{ margin: "5px 0px" }}>
+                  <b>Description : </b>
+                  {e.desc}
+                </p>
+                <p>
+                  {" "}
+                  <b>Asign : </b> {e.asign}
+                </p>
                 <div
                   style={{ display: "flex", justifyContent: "space-around" }}
-                >
-                  <button
-                    className="task-card-button"
-                    onClick={() => moveToDoing(e.id)}
-                  >
-                    Doing
-                  </button>
-                  <button
-                    className="task-card-button"
-                    onClick={() => moveToDone(e.id)}
-                  >
-                    Done
-                  </button>
-                </div>
+                ></div>
               </div>
             ))}
           </div>
@@ -220,7 +231,13 @@ const Home = () => {
           onDragEnd={(ele) => handleDragEnd(ele, { place: "doing" })}
         >
           <div className="task-bar-heading">
-            <div>Doing</div>
+            <div>In Development</div>
+          </div>
+          <div style={{ padding: "7px" }}>
+            <input
+              placeholder="search on-going tasks"
+              style={{ padding: "7px", width: "95%" }}
+            />
           </div>
           <div>
             {doingData.map((e, index) => (
@@ -232,24 +249,20 @@ const Home = () => {
                 }
                 className="task-card"
               >
-                <h5 style={{ margin: "0px" }}>{e.title}</h5>
-                <p style={{ margin: "10px 0px" }}>{e.desc}</p>
-                <div
-                  style={{ display: "flex", justifyContent: "space-around" }}
-                >
-                  <button
-                    className="task-card-button"
-                    onClick={() => moveToDo(e.id)}
-                  >
-                    To Do
-                  </button>
-                  <button
-                    className="task-card-button"
-                    onClick={() => moveToDone(e.id)}
-                  >
-                    Done
-                  </button>
-                </div>
+                <h4 style={{ margin: "0px" }}>{e.title}</h4>
+                <p style={{ margin: "10px 0px" }}>
+                  {" "}
+                  <b>File : </b>
+                  {e.attach}
+                </p>
+                <p style={{ margin: "5px 0px" }}>
+                  <b>Description : </b>
+                  {e.desc}
+                </p>
+                <p>
+                  {" "}
+                  <b>Asign : </b> {e.asign}
+                </p>
               </div>
             ))}
           </div>
@@ -266,7 +279,33 @@ const Home = () => {
             className="task-bar-heading"
             style={{ backgroundColor: "#60956f" }}
           >
-            <div>Done</div>
+            <div>Completed</div>
+          </div>
+          <div style={{ padding: "7px" }}>
+            <input
+              placeholder="search completed tasks"
+              style={{ padding: "7px", width: "95%" }}
+            />
+          </div>
+          <div
+            className="addTask"
+            style={
+              displayAlert
+                ? {
+                    display: "flex",
+                    flexDirection: "column",
+                    padding: "10px",
+                    gap: "5px",
+                  }
+                : { display: "none" }
+            }
+          >
+            <input
+              placeholder="Add Comment"
+              value={addComm}
+              onChange={(e) => setAddComment(e.target.value)}
+            />
+            <button onClick={addComment}>Add Comment</button>
           </div>
           <div>
             {doneData.map((e, index) => (
@@ -278,26 +317,23 @@ const Home = () => {
                 }
                 className="task-card"
               >
-                <h5 style={{ margin: "0px" }}>{e.title}</h5>
-                <p style={{ margin: "10px 0px" }}>{e.desc}</p>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-around",
-                  }}
-                >
-                  <button
-                    className="task-card-button"
-                    onClick={() => moveToDo(e.id)}
-                  >
-                    Doing
-                  </button>
-                  <button
-                    className="task-card-button"
-                    onClick={() => moveToDone(e.id)}
-                  >
-                    To Do
-                  </button>
+                <h4 style={{ margin: "0px" }}>{e.title}</h4>
+                <p style={{ margin: "10px 0px" }}>
+                  {" "}
+                  <b>File : </b>
+                  {e.attach}
+                </p>
+                <p style={{ margin: "5px 0px" }}>
+                  <b>Description : </b>
+                  {e.desc}
+                </p>
+                <p>
+                  {" "}
+                  <b>Asign : </b> {e.asign}
+                </p>
+                <div className="tool-tip">
+                  comment
+                  <p className="tool-tip-text">{e.comment}</p>
                 </div>
               </div>
             ))}
@@ -309,3 +345,39 @@ const Home = () => {
 };
 
 export default Home;
+
+// ---------------------MOVING TASK TO DOING------------------------------------------
+// const moveToDoing = (e) => {
+//   let a = todoData.filter((item) => item.id === e);
+//   let b = todoData.filter((item) => item.id !== e);
+//   localStorage.removeItem("todo");
+//   setTodoData(localStorage.setItem("todo", JSON.stringify(b)) || []);
+//   localStorage.setItem("todo", JSON.stringify(b));
+//   let newTask = a[0];
+//   doingData.push(newTask);
+//   localStorage.setItem("doing", JSON.stringify(doingData));
+// };
+
+// ---------------------MOVING TASK TO TODO------------------------------------------
+// const moveToDo = (e) => {
+//   let a = doingData.filter((item) => item.id === e);
+//   let b = doingData.filter((item) => item.id !== e);
+//   localStorage.removeItem("doing");
+//   setDoingData(localStorage.setItem("doing", JSON.stringify(b)) || []);
+//   localStorage.setItem("doing", JSON.stringify(b));
+//   let newTask = a[0];
+//   todoData.push(newTask);
+//   localStorage.setItem("todo", JSON.stringify(todoData));
+// };
+
+// ---------------------MOVING TASK TO DONE------------------------------------------
+// const moveToDone = (e) => {
+//   let a = doingData.filter((item) => item.id === e);
+//   let b = doingData.filter((item) => item.id !== e);
+//   localStorage.removeItem("doing");
+//   setDoingData(localStorage.setItem("doing", JSON.stringify(b)) || []);
+//   localStorage.setItem("doing", JSON.stringify(b));
+//   let newTask = a[0];
+//   doneData.push(newTask);
+//   localStorage.setItem("done", JSON.stringify(doneData));
+// };

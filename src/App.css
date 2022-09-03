@@ -65,3 +65,30 @@
   box-shadow: 2px 2px 2px black;
   cursor: pointer
 }
+
+.tool-tip {
+  position: relative;
+  display: inline-block;
+}
+
+.tool-tip .tool-tip-text {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: white;
+  text-align: center;
+  border-radius: 3px;
+  padding: 5px 0px;
+  position: absolute;
+  /* z-index: 1; */
+  bottom: -100%;
+  left: 200%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.7s;
+}
+
+.tool-tip:hover .tool-tip-text {
+  visibility: visible;
+  opacity: 1;
+}
